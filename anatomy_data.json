@@ -1,0 +1,25 @@
+{
+  "anatomy_layers": [
+    {
+      "id": 0,
+      "name": "หัวใจ (Heart)",
+      "model_file": "realistic_human_heart.glb",
+      "description": "กล้ามเนื้อที่ทำหน้าที่สูบฉีดเลือดไปเลี้ยงส่วนต่างๆ ของร่างกาย ประกอบด้วย 4 ห้องหลัก คือ ห้องบน (Atrium) และห้องล่าง (Ventricle)",
+      "hotspot_pos": "0m 0.1m 0m"
+    },
+    {
+      "id": 1,
+      "name": "หลอดเลือดแดง (Arteries)",
+      "model_file": "realistic_human_heart.glb",
+      "description": "หลอดเลือดแดงใหญ่ (Aorta) นำเลือดแดงที่มีออกซิเจนสูงออกจากหัวใจห้องล่างซ้ายไปเลี้ยงร่างกาย",
+      "hotspot_pos": "0.1m 0.5m 0.2m"
+    },
+    {
+      "id": 2,
+      "name": "หลอดเลือดดำ (Veins)",
+      "model_file": "realistic_human_heart.glb",
+      "description": "หลอดเลือดดำ (Vena Cava) นำเลือดดำกลับเข้าสู่หัวใจห้องบนขวา เพื่อเตรียมส่งไปฟอกที่ปอด",
+      "hotspot_pos": "-0.1m 0.5m 0.2m"
+    }
+  ]
+}
