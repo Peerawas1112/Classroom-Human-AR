@@ -10,91 +10,107 @@
 
 <style>
 :root {
-  --primary: #ff4757;
-  --bg: #020617;
-  --glass: rgba(15,23,42,.75);
-  --border: rgba(255,255,255,.1);
+  --primary:#ff4757;
+  --bg:#020617;
+  --glass:rgba(15,23,42,.8);
+  --border:rgba(255,255,255,.1);
 }
 
-body {
+body{
   margin:0;
-  font-family: Kanit, sans-serif;
-  background: var(--bg);
-  color: white;
+  font-family:Kanit,sans-serif;
+  background:var(--bg);
+  color:white;
   height:100vh;
   display:flex;
   flex-direction:column;
   overflow:hidden;
 }
 
-/* ===== APP HEADER ===== */
-.app-header {
-  height: 52px;
-  background: rgba(0,0,0,.6);
-  backdrop-filter: blur(10px);
+/* Header */
+.app-header{
+  height:55px;
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(10px);
   display:flex;
   align-items:center;
   padding:0 16px;
   font-weight:500;
-  z-index:500;
 }
 
-/* ===== VIEWER ===== */
-.viewer-container {
+/* Tabs */
+.tabs{
+  display:flex;
+  gap:10px;
+  padding:10px;
+  overflow-x:auto;
+  background:var(--glass);
+}
+.tab-btn{
+  padding:8px 16px;
+  border-radius:16px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.05);
+  cursor:pointer;
+}
+.tab-btn.active{
+  background:var(--primary);
+}
+
+/* Layout */
+.main{
   flex:1;
+  display:flex;
+  flex-direction:column;
   position:relative;
 }
 
-model-viewer {
+.viewer{
+  flex:1;
+}
+model-viewer{
   width:100%;
   height:100%;
 }
 
-/* ===== FLOATING CONTROLS ===== */
-.controls {
-  position:absolute;
-  top:70px;
-  right:15px;
+/* Bottom menu */
+.menu{
+  background:rgba(0,0,0,.6);
   display:flex;
-  flex-direction:column;
   gap:10px;
-  z-index:200;
+  padding:10px;
+  overflow-x:auto;
 }
-.controls button {
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  background:var(--glass);
-  border:1px solid var(--border);
-  color:white;
-  font-size:18px;
+.menu-item{
+  padding:8px 14px;
+  border-radius:14px;
+  background:rgba(255,255,255,.05);
   cursor:pointer;
 }
+.menu-item.active{
+  background:var(--primary);
+}
 
-/* ===== INFO CARD ===== */
-.info-panel {
+/* Info */
+.info-panel{
   position:absolute;
-  bottom:100px;
+  bottom:120px;
   left:50%;
   transform:translateX(-50%);
   width:92%;
-  max-width:420px;
+  max-width:450px;
   background:var(--glass);
   border:1px solid var(--border);
-  border-radius:18px;
+  border-radius:20px;
   padding:16px;
 }
-.info-header {
+.info-header{
   color:var(--primary);
   font-size:1.2rem;
 }
-.info-content {
-  font-size:.95rem;
-  color:#ddd;
-}
 
-/* ===== WELCOME SCREEN ===== */
-#welcome {
+/* Welcome */
+#welcome{
   position:fixed;
   inset:0;
   background:linear-gradient(135deg,#020617,#111827);
@@ -103,89 +119,97 @@ model-viewer {
   justify-content:center;
   z-index:999;
 }
-.welcome-box {
-  text-align:center;
-  padding:30px;
-}
-.welcome-box h1 {
-  font-size:1.6rem;
-}
-.welcome-box button {
+.welcome-box{text-align:center;}
+.welcome-box button{
   margin-top:20px;
-  background:var(--primary);
-  border:none;
   padding:14px 30px;
   border-radius:20px;
-  font-size:1rem;
+  background:var(--primary);
+  border:none;
   color:white;
-  cursor:pointer;
-}
-
-/* ===== AR BUTTON ===== */
-#ar-button {
-  position:absolute;
-  top:60px;
-  left:15px;
-  padding:12px 20px;
-  border-radius:16px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- Welcome Screen -->
 <div id="welcome">
   <div class="welcome-box">
-    <h1>🫀 Human Anatomy AR</h1>
-    <p>เรียนรู้กายวิภาคผ่านโมเดล 3 มิติ</p>
+    <h1>🧠 Human Anatomy AR</h1>
+    <p>เรียนรู้ระบบร่างกายมนุษย์แบบ 3 มิติ</p>
     <button onclick="startApp()">เริ่มเรียน</button>
   </div>
 </div>
 
 <div class="app-header">📘 Anatomy Learning</div>
+<div class="tabs" id="tabs"></div>
 
-<div class="viewer-container">
-
-  <model-viewer id="viewer"
-    src="realistic_human_heart.glb"
-    ar
-    ar-modes="webxr scene-viewer quick-look"
-    camera-controls
-    auto-rotate
-    exposure="1.1"
-    environment-image="neutral">
-
-    <button slot="ar-button" id="ar-button">📱 เปิด AR</button>
-  </model-viewer>
-
-  <div class="controls">
-    <button onclick="resetView()">🔄</button>
-    <button onclick="toggleRotate()">🌀</button>
+<div class="main">
+  <div class="viewer">
+    <model-viewer id="viewer"
+      src=""
+      ar
+      ar-modes="webxr scene-viewer quick-look"
+      camera-controls
+      auto-rotate>
+      <button slot="ar-button">📱 เปิด AR</button>
+    </model-viewer>
   </div>
 
   <div class="info-panel">
-    <div class="info-header">หัวใจ</div>
-    <div class="info-content">
-      หัวใจทำหน้าที่สูบฉีดเลือดไปเลี้ยงทั่วร่างกาย
-    </div>
+    <div class="info-header" id="title">เลือกอวัยวะ</div>
+    <div id="desc">กรุณาเลือกข้อมูลด้านล่าง</div>
   </div>
 
+  <div class="menu" id="menu"></div>
 </div>
 
 <script>
+let data = [];
 const viewer = document.getElementById("viewer");
+const tabs = document.getElementById("tabs");
+const menu = document.getElementById("menu");
+const title = document.getElementById("title");
+const desc = document.getElementById("desc");
 
 function startApp(){
   document.getElementById("welcome").style.display="none";
 }
 
-function resetView(){
-  viewer.cameraOrbit = "0deg 75deg 2.5m";
+fetch("anatomy_data.json")
+  .then(r=>r.json())
+  .then(json=>{
+    data = json.systems;
+    renderTabs();
+    loadSystem(0);
+  });
+
+function renderTabs(){
+  tabs.innerHTML = data.map((s,i)=>
+    `<div class="tab-btn" onclick="loadSystem(${i})" id="tab${i}">${s.category}</div>`
+  ).join("");
 }
 
-function toggleRotate(){
-  viewer.autoRotate = !viewer.autoRotate;
+function loadSystem(i){
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  document.getElementById("tab"+i).classList.add("active");
+
+  const items = data[i].items;
+  menu.innerHTML = items.map((o,j)=>
+    `<div class="menu-item" onclick="selectOrgan(${i},${j})" id="item${j}">${o.name}</div>`
+  ).join("");
+
+  selectOrgan(i,0);
+}
+
+function selectOrgan(i,j){
+  document.querySelectorAll(".menu-item").forEach(b=>b.classList.remove("active"));
+  document.getElementById("item"+j).classList.add("active");
+
+  const organ = data[i].items[j];
+  viewer.src = organ.model_file;
+  title.textContent = organ.name;
+  desc.textContent = organ.description;
 }
 </script>
 
