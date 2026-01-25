@@ -3,19 +3,56 @@
     {
       "category": "ระบบหมุนเวียนเลือด",
       "items": [
-        { "name": " หัวใจ (Heart)", "model_file": "realistic_human_heart.glb", "description": "สูบฉีดเลือดไปเลี้ยงร่างกาย ประกอบด้วย 4 ห้องหลัก", "hotspot_pos": "0m 0.1m 0m" }
+        {
+          "name": "หัวใจ",
+          "model_file": "realistic_human_heart.glb",
+          "description": "ทำหน้าที่สูบฉีดเลือดไปเลี้ยงทั่วร่างกาย"
+        },
+        {
+          "name": "หลอดเลือด",
+          "model_file": "models/blood_vessel.glb",
+          "description": "ลำเลียงเลือดจากหัวใจไปยังส่วนต่าง ๆ"
+        }
       ]
     },
     {
       "category": "ระบบหายใจ",
       "items": [
-        { "name": " ปอด (Lungs)", "model_file": "realistic_human_heart.glb", "description": "ทำหน้าที่แลกเปลี่ยนแก๊สออกซิเจนและคาร์บอนไดออกไซด์", "hotspot_pos": "0m 0.2m 0m" }
+        {
+          "name": "ปอด",
+          "model_file": "models/lung.glb",
+          "description": "ทำหน้าที่แลกเปลี่ยนก๊าซออกซิเจนและคาร์บอนไดออกไซด์"
+        }
       ]
     },
     {
       "category": "ระบบขับถ่าย",
       "items": [
-        { "name": " ไต (Kidneys)", "model_file": "realistic_human_heart.glb", "description": "ทำหน้าที่กรองของเสียออกจากกระแสเลือด", "hotspot_pos": "0m 0m 0m" }
+        {
+          "name": "ไต",
+          "model_file": "models/kidney.glb",
+          "description": "กรองของเสียออกจากเลือด"
+        }
+      ]
+    },
+    {
+      "category": "ระบบประสาท",
+      "items": [
+        {
+          "name": "สมอง",
+          "model_file": "models/brain.glb",
+          "description": "ควบคุมการทำงานของร่างกาย"
+        }
+      ]
+    },
+    {
+      "category": "ระบบสืบพันธุ์",
+      "items": [
+        {
+          "name": "มดลูก",
+          "model_file": "models/uterus.glb",
+          "description": "เป็นที่เจริญเติบโตของทารก"
+        }
       ]
     }
   ]
