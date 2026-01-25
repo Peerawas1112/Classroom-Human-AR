@@ -3,140 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Circulatory System AR Explorer</title>
+    <title>Human Anatomy AR Explorer</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap" rel="stylesheet">
     
     <style>
-        :root { --primary: #ef4444; --bg: #020617; --panel: rgba(15, 23, 42, 0.9); }
-        body { margin: 0; font-family: 'Kanit', sans-serif; background: var(--bg); color: white; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        :root { --primary: #ef4444; --dark: #020617; --panel: rgba(15, 23, 42, 0.95); }
+        body { margin: 0; font-family: 'Kanit', sans-serif; background: var(--dark); color: white; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
+        /* ระบบ Tab ระบบหลัก */
+        .system-tabs {
+            background: #1e293b; display: flex; overflow-x: auto; padding: 10px; gap: 10px; border-bottom: 2px solid var(--primary); z-index: 10;
+        }
+        .tab-btn {
+            padding: 8px 15px; background: rgba(255,255,255,0.1); border-radius: 20px;
+            cursor: pointer; white-space: nowrap; font-size: 0.9rem; transition: 0.3s; border: 1px solid transparent;
+        }
+        .tab-btn.active { background: var(--primary); border-color: white; }
+
+        /* รายการอวัยวะย่อย */
         .sidebar {
-            width: 100%; max-height: 120px; background: var(--panel); backdrop-filter: blur(15px);
-            border-bottom: 1px solid rgba(255,255,255,0.1); padding: 15px; display: flex; overflow-x: auto; gap: 10px; z-index: 10; box-sizing: border-box;
+            background: var(--panel); padding: 10px; display: flex; overflow-x: auto; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 5;
         }
-        .sidebar h2 { display: none; }
-        
         .menu-item {
-            flex: 0 0 auto; padding: 10px 20px; background: rgba(255,255,255,0.05); border-radius: 12px;
-            cursor: pointer; transition: 0.3s; border: 1px solid transparent; white-space: nowrap;
+            padding: 8px 15px; background: rgba(255,255,255,0.05); border-radius: 10px;
+            cursor: pointer; font-size: 0.85rem; white-space: nowrap; transition: 0.2s;
         }
-        .menu-item.active { background: var(--primary); border-color: white; }
+        .menu-item.active { background: #475569; border: 1px solid var(--primary); color: var(--primary); }
 
-        .viewer-container { flex: 1; position: relative; width: 100%; }
+        /* ส่วนแสดงโมเดล 3D */
+        .viewer-container { flex: 1; position: relative; width: 100%; background: radial-gradient(circle, #1e293b 0%, #020617 100%); }
         model-viewer { width: 100%; height: 100%; }
 
+        /* แผงข้อมูล (Info Panel) */
         .info-panel {
-            position: absolute; bottom: 0; left: 0; width: 100%;
-            background: var(--panel); backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255,255,255,0.1); padding: 20px; 
-            max-height: 30%; overflow-y: auto; z-index: 20;
-            transform: translateY(100%); transition: 0.5s ease;
+            background: var(--panel); padding: 20px; transition: 0.5s ease;
+            max-height: 25vh; overflow-y: auto; border-top: 3px solid var(--primary); z-index: 20;
         }
-        .info-panel.active { transform: translateY(0); }
-        .info-header { color: var(--primary); font-size: 1.2rem; font-weight: 500; margin-bottom: 8px; }
-        .info-content { font-size: 0.9rem; line-height: 1.5; color: #cbd5e1; }
+        .info-header { color: var(--primary); font-size: 1.3rem; margin-bottom: 5px; font-weight: 500; }
+        .info-content { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; }
 
+        /* ปุ่มเปิด AR */
         #ar-button {
-            position: absolute; bottom: 40%; right: 20px; z-index: 30;
-            background: var(--primary); color: white; border: none; padding: 15px 25px;
-            border-radius: 50px; font-weight: 600; cursor: pointer;
-            box-shadow: 0 10px 20px rgba(239, 68, 68, 0.4);
-            display: flex; align-items: center; gap: 8px;
+            position: absolute; bottom: 20px; right: 20px;
+            background: var(--primary); color: white; border: 1px solid white; padding: 12px 25px;
+            border-radius: 50px; font-weight: bold; cursor: pointer; z-index: 30;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
         }
 
-        .hotspot {
-            background: var(--primary); border-radius: 50%; border: 2px solid white;
-            width: 18px; height: 18px; cursor: pointer;
-        }
-
+        /* --- สำหรับหน้าจอคอมพิวเตอร์ (Desktop) --- */
         @media (min-width: 768px) {
             body { flex-direction: row; }
-            .sidebar { width: 280px; height: 100vh; max-height: none; flex-direction: column; overflow-x: hidden; border-right: 1px solid rgba(255,255,255,0.1); border-bottom: none; }
-            .sidebar h2 { display: block; padding-bottom: 15px; margin: 0; }
-            #menu-list { flex-direction: column; }
-            .info-panel { position: static; width: 350px; max-height: none; transform: none; border-top: none; border-left: 1px solid rgba(255,255,255,0.1); }
+            .system-tabs { width: 120px; flex-direction: column; height: 100vh; border-bottom: none; border-right: 2px solid var(--primary); overflow-y: auto; overflow-x: hidden; }
+            .sidebar { width: 220px; flex-direction: column; height: 100vh; border-bottom: none; border-right: 1px solid #334155; overflow-y: auto; overflow-x: hidden; }
+            .info-panel { width: 350px; max-height: 100vh; border-top: none; border-left: 3px solid var(--primary); }
+            .viewer-container { flex: 1; }
             #ar-button { bottom: 30px; left: 50%; transform: translateX(-50%); right: auto; }
         }
+
+        /* ซ่อน Scrollbar */
+        .system-tabs::-webkit-scrollbar, .sidebar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body>
 
+    <div class="system-tabs" id="system-tabs"></div>
+    
     <div class="sidebar">
-        <h2>ระบบไหลเวียนเลือด</h2>
-        <div id="menu-list"></div>
+        <div id="menu-list" style="display:contents"></div>
     </div>
 
     <div class="viewer-container">
         <model-viewer id="main-viewer" 
             src="realistic_human_heart.glb" 
-            ar 
-            ar-modes="webxr scene-viewer quick-look" 
-            camera-controls 
-            shadow-intensity="1" 
-            auto-rotate>
+            ar ar-modes="webxr scene-viewer quick-look" 
+            camera-controls shadow-intensity="1" auto-rotate>
             
-            <button slot="ar-button" id="ar-button">
-                <span>📷</span> VIEW IN AR
-            </button>
-            
-            <button class="hotspot" slot="hotspot-info" id="hotspot-node" data-position="0m 0.1m 0m" data-normal="0 0 1"></button>
+            <button slot="ar-button" id="ar-button">📷 เปิดโหมด AR</button>
+            <button class="hotspot" slot="hotspot-info" id="hotspot-node" style="display:none;"></button>
         </model-viewer>
     </div>
 
     <div class="info-panel" id="info-panel">
-        <div class="info-header" id="info-title">ระบบไหลเวียนเลือด</div>
-        <div class="info-content" id="info-content">กำลังโหลดข้อมูล...</div>
+        <div class="info-header" id="info-title">กรุณาเลือกอวัยวะ</div>
+        <div class="info-content" id="info-content"></div>
     </div>
 
     <script>
-        let anatomyData = [];
+        let allSystems = [];
+        const tabsContainer = document.getElementById('system-tabs');
         const menuList = document.getElementById('menu-list');
-        const infoPanel = document.getElementById('info-panel');
         const modelViewer = document.getElementById('main-viewer');
+        const infoTitle = document.getElementById('info-title');
+        const infoContent = document.getElementById('info-content');
 
+        // 1. โหลดข้อมูลจาก JSON
         async function init() {
             try {
-                // ดึงข้อมูลจาก JSON
                 const response = await fetch('anatomy_data.json');
+                if (!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
-                anatomyData = data.anatomy_layers;
-                renderMenu();
-                // เริ่มต้นด้วยอวัยวะแรก
-                if(anatomyData.length > 0) switchSystem(0);
+                allSystems = data.systems;
+                renderTabs();
+                switchCategory(0); // เริ่มที่ระบบแรก
             } catch (e) { 
-                console.error("Error:", e);
-                document.getElementById('info-content').innerText = "ไม่สามารถโหลดข้อมูล JSON ได้";
+                console.error("Error loading JSON:", e);
+                infoTitle.innerText = "Error";
+                infoContent.innerText = "ไม่สามารถโหลดไฟล์ anatomy_data.json ได้ ตรวจสอบชื่อไฟล์และการตั้งค่า GitHub Pages";
             }
         }
 
-        function renderMenu() {
-            menuList.innerHTML = anatomyData.map((item, index) => `
-                <div class="menu-item" id="menu-${index}" onclick="switchSystem(${index})">
-                    ${item.name}
+        // 2. สร้างปุ่มระบบหลัก
+        function renderTabs() {
+            tabsContainer.innerHTML = allSystems.map((sys, idx) => `
+                <div class="tab-btn" id="tab-${idx}" onclick="switchCategory(${idx})">
+                    ${sys.category}
                 </div>
             `).join('');
         }
 
-        function switchSystem(index) {
-            const item = anatomyData[index];
-            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-            document.getElementById(`menu-${index}`).classList.add('active');
+        // 3. เมื่อเลือกเปลี่ยนระบบ
+        function switchCategory(sysIdx) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${sysIdx}`).classList.add('active');
 
-            // เปลี่ยนไฟล์โมเดล
-            modelViewer.src = item.model_file;
+            const currentItems = allSystems[sysIdx].items;
+            menuList.innerHTML = currentItems.map((item, idx) => `
+                <div class="menu-item" id="item-${idx}" onclick="displayOrgan(${sysIdx}, ${idx})">
+                    ${item.name}
+                </div>
+            `).join('');
             
-            document.getElementById('info-title').innerText = item.name;
-            document.getElementById('info-content').innerText = item.description;
-            infoPanel.classList.add('active');
+            // เลือกอวัยวะแรกของระบบนั้นโดยอัตโนมัติ
+            if(currentItems.length > 0) displayOrgan(sysIdx, 0);
+        }
 
-            const hotspot = document.getElementById('hotspot-node');
-            if(item.hotspot_pos) {
-                hotspot.setAttribute('data-position', item.hotspot_pos);
-                hotspot.style.display = "block";
-            } else {
-                hotspot.style.display = "none";
-            }
+        // 4. แสดงข้อมูลอวัยวะ
+        function displayOrgan(sysIdx, itemIdx) {
+            const item = allSystems[sysIdx].items[itemIdx];
+            
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+            const activeMenu = document.getElementById(`item-${itemIdx}`);
+            if(activeMenu) activeMenu.classList.add('active');
+
+            // เปลี่ยนโมเดลและข้อมูล
+            modelViewer.src = item.model_file;
+            infoTitle.innerText = item.name;
+            infoContent.innerText = item.description;
+            
+            // เลื่อน Panel ข้อมูลขึ้นมาโชว์ในมือถือ
+            document.getElementById('info-panel').scrollTop = 0;
         }
 
         init();
