@@ -27,6 +27,57 @@ body{
   overflow:hidden;
 }
 
+/* ===== HOME PAGE ===== */
+.home {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg,#020617,#0f172a);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.home-box {
+  text-align: center;
+  max-width: 420px;
+  padding: 30px;
+}
+
+.home-box h1 {
+  font-size: 2rem;
+}
+
+.subtitle {
+  color: #cbd5e1;
+  margin: 10px 0 25px;
+}
+
+.home-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.home-menu button {
+  padding: 14px;
+  font-size: 1rem;
+  border-radius: 18px;
+  border: none;
+  background: #ff4757;
+  color: white;
+  cursor: pointer;
+}
+
+.home-menu button:nth-child(2) { background:#2563eb; }
+.home-menu button:nth-child(3) { background:#334155; }
+
+.credit {
+  margin-top: 20px;
+  font-size: .85rem;
+  color: #64748b;
+}
+
 /* Header */
 .app-header{
   height:55px;
@@ -65,13 +116,8 @@ body{
   position:relative;
 }
 
-.viewer{
-  flex:1;
-}
-model-viewer{
-  width:100%;
-  height:100%;
-}
+.viewer{ flex:1; }
+model-viewer{ width:100%; height:100%; }
 
 /* Bottom menu */
 .menu{
@@ -87,9 +133,7 @@ model-viewer{
   background:rgba(255,255,255,.05);
   cursor:pointer;
 }
-.menu-item.active{
-  background:var(--primary);
-}
+.menu-item.active{ background:var(--primary); }
 
 /* Info */
 .info-panel{
@@ -104,42 +148,28 @@ model-viewer{
   border-radius:20px;
   padding:16px;
 }
-.info-header{
-  color:var(--primary);
-  font-size:1.2rem;
-}
-
-/* Welcome */
-#welcome{
-  position:fixed;
-  inset:0;
-  background:linear-gradient(135deg,#020617,#111827);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:999;
-}
-.welcome-box{text-align:center;}
-.welcome-box button{
-  margin-top:20px;
-  padding:14px 30px;
-  border-radius:20px;
-  background:var(--primary);
-  border:none;
-  color:white;
-}
+.info-header{ color:var(--primary); font-size:1.2rem; }
 </style>
+
 </head>
 
 <body>
 
-<div id="welcome">
-  <div class="welcome-box">
+<div id="home" class="home">
+  <div class="home-box">
     <h1>🧠 Human Anatomy AR</h1>
-    <p>เรียนรู้ระบบร่างกายมนุษย์แบบ 3 มิติ</p>
-    <button onclick="startApp()">เริ่มเรียน</button>
+    <p class="subtitle">ระบบการเรียนรู้กายวิภาคมนุษย์ด้วย AR และโมเดล 3 มิติ</p>
+
+    <div class="home-menu">
+      <button onclick="startLearning()">📚 เริ่มเรียน</button>
+      <button onclick="openQuiz()">📝 แบบทดสอบ</button>
+      <button onclick="openAbout()">ℹ️ เกี่ยวกับโครงงาน</button>
+    </div>
+
+    <p class="credit">โครงงานระดับปริญญาตรี</p>
   </div>
 </div>
+
 
 <div class="app-header">📘 Anatomy Learning</div>
 <div class="tabs" id="tabs"></div>
@@ -172,16 +202,30 @@ const menu = document.getElementById("menu");
 const title = document.getElementById("title");
 const desc = document.getElementById("desc");
 
-function startApp(){
-  document.getElementById("welcome").style.display="none";
+/* ===== Home functions ===== */
+function startLearning(){
+  document.getElementById("home").style.display = "none";
 }
 
+function openQuiz(){
+  alert("ระบบแบบทดสอบจะพัฒนาในขั้นถัดไป");
+}
+
+function openAbout(){
+  alert("โครงงานนี้จัดทำเพื่อเป็นสื่อการเรียนรู้กายวิภาค โดยใช้ WebAR และ 3D Model");
+}
+
+/* ===== Load JSON ===== */
 fetch("anatomy_data.json")
-  .then(r=>r.json())
-  .then(json=>{
+  .then(r => r.json())
+  .then(json => {
     data = json.systems;
     renderTabs();
     loadSystem(0);
+  })
+  .catch(err => {
+    alert("โหลด anatomy_data.json ไม่ได้ ตรวจสอบชื่อไฟล์");
+    console.error(err);
   });
 
 function renderTabs(){
@@ -212,6 +256,7 @@ function selectOrgan(i,j){
   desc.textContent = organ.description;
 }
 </script>
+
 
 </body>
 </html>
