@@ -9,254 +9,350 @@
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap" rel="stylesheet">
 
 <style>
-:root {
-  --primary:#ff4757;
-  --bg:#020617;
-  --glass:rgba(15,23,42,.8);
-  --border:rgba(255,255,255,.1);
-}
-
 body{
   margin:0;
   font-family:Kanit,sans-serif;
-  background:var(--bg);
+  background:#020617;
   color:white;
-  height:100vh;
+}
+.home,.quiz-page{
+  position:fixed;
+  inset:0;
   display:flex;
-  flex-direction:column;
-  overflow:hidden;
-}
-
-/* ===== HOME PAGE ===== */
-.home {
-  position: fixed;
-  inset: 0;
-  background: linear-gradient(135deg,#020617,#0f172a);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.home-box {
-  text-align: center;
-  max-width: 420px;
-  padding: 30px;
-}
-
-.home-box h1 {
-  font-size: 2rem;
-}
-
-.subtitle {
-  color: #cbd5e1;
-  margin: 10px 0 25px;
-}
-
-.home-menu {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.home-menu button {
-  padding: 14px;
-  font-size: 1rem;
-  border-radius: 18px;
-  border: none;
-  background: #ff4757;
-  color: white;
-  cursor: pointer;
-}
-
-.home-menu button:nth-child(2) { background:#2563eb; }
-.home-menu button:nth-child(3) { background:#334155; }
-
-.credit {
-  margin-top: 20px;
-  font-size: .85rem;
-  color: #64748b;
-}
-
-/* Header */
-.app-header{
-  height:55px;
-  background:rgba(0,0,0,.6);
-  backdrop-filter:blur(10px);
-  display:flex;
+  justify-content:center;
   align-items:center;
-  padding:0 16px;
-  font-weight:500;
+  background:#020617;
+  z-index:10;
 }
-
-/* Tabs */
-.tabs{
-  display:flex;
-  gap:10px;
-  padding:10px;
-  overflow-x:auto;
-  background:var(--glass);
+.quiz-page{display:none;}
+.box{
+  width:90%;
+  max-width:480px;
+  background:#0f172a;
+  border-radius:20px;
+  padding:24px;
+  text-align:center;
 }
-.tab-btn{
-  padding:8px 16px;
-  border-radius:16px;
-  border:1px solid var(--border);
-  background:rgba(255,255,255,.05);
+button{
+  padding:12px 18px;
+  border:none;
+  border-radius:14px;
+  background:#ff4757;
+  color:white;
   cursor:pointer;
 }
-.tab-btn.active{
-  background:var(--primary);
+.choice{
+  background:#1e293b;
+  padding:12px;
+  border-radius:12px;
+  margin:8px 0;
+  cursor:pointer;
 }
-
-/* Layout */
-.main{
-  flex:1;
+.choice.correct{background:#16a34a;}
+.choice.wrong{background:#dc2626;}
+.tabs,.menu{
   display:flex;
-  flex-direction:column;
-  position:relative;
-}
-
-.viewer{ flex:1; }
-model-viewer{ width:100%; height:100%; }
-
-/* Bottom menu */
-.menu{
-  background:rgba(0,0,0,.6);
-  display:flex;
-  gap:10px;
+  gap:8px;
   padding:10px;
   overflow-x:auto;
 }
-.menu-item{
+.tab-btn,.menu-item{
   padding:8px 14px;
   border-radius:14px;
-  background:rgba(255,255,255,.05);
+  background:#1e293b;
   cursor:pointer;
 }
-.menu-item.active{ background:var(--primary); }
-
-/* Info */
+.tab-btn.active,.menu-item.active{background:#ff4757;}
+.main{height:calc(100vh - 110px);}
+model-viewer{width:100%;height:100%;}
 .info-panel{
   position:absolute;
-  bottom:120px;
+  bottom:80px;
   left:50%;
   transform:translateX(-50%);
-  width:92%;
-  max-width:450px;
-  background:var(--glass);
-  border:1px solid var(--border);
-  border-radius:20px;
-  padding:16px;
+  background:#0f172a;
+  width:90%;
+  max-width:420px;
+  border-radius:16px;
+  padding:14px;
 }
-.info-header{ color:var(--primary); font-size:1.2rem; }
+button:disabled { background: #475569; cursor: not-allowed; }
+  .summary-score { font-size: 2.5rem; color: #ff4757; margin: 15px 0; font-weight: bold; }
+  .explanation { font-size: 0.9rem; color: #cbd5e1; margin-top: 10px; font-style: italic; }
+  /* เพิ่มสไตล์สำหรับแถบเวลา */
+  .timer-container {
+    width: 100%;
+    height: 8px;
+    background: #1e293b;
+    border-radius: 4px;
+    margin: 15px 0;
+    overflow: hidden;
+  }
+  #timerBar {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #ff4757, #ff6b81);
+    transition: width 1s linear;
+  }
+  .timer-text { font-size: 0.9rem; color: #ff4757; font-weight: bold; }
 </style>
-
 </head>
 
 <body>
 
 <div id="home" class="home">
-  <div class="home-box">
-    <h1>🧠 Human Anatomy AR</h1>
-    <p class="subtitle">ระบบการเรียนรู้กายวิภาคมนุษย์ด้วย AR และโมเดล 3 มิติ</p>
-
-    <div class="home-menu">
-      <button onclick="startLearning()">📚 เริ่มเรียน</button>
-      <button onclick="openQuiz()">📝 แบบทดสอบ</button>
-      <button onclick="openAbout()">ℹ️ เกี่ยวกับโครงงาน</button>
-    </div>
-
-    <p class="credit">โครงงานระดับปริญญาตรี</p>
+  <div class="box">
+    <h1>Human Anatomy AR</h1>
+    <button onclick="startLearning()">📚 เริ่มเรียน</button><br><br>
+    <button onclick="openQuiz()">📝 แบบทดสอบก่อนเรียน</button><br><br>
+    <button onclick="openQuiz()">📝 แบบทดสอบหลังเรียน</button>
   </div>
 </div>
 
+<div id="quizPage" class="quiz-page">
+  <div class="box">
+    <div class="timer-text">เวลาที่เหลือ: <span id="timeLeft">15</span> วินาที</div>
+    <div class="timer-container"><div id="timerBar"></div></div>
+    
+    <h2 id="qTitle"></h2>
+    <div id="qChoices"></div>
+    <p id="qProgress"></p>
+    <button id="nextBtn" onclick="nextQuestion()">ถัดไป</button><br><br>
+    <button onclick="closeQuiz()">⬅ กลับ</button>
+  </div>
+</div>
 
-<div class="app-header">📘 Anatomy Learning</div>
 <div class="tabs" id="tabs"></div>
 
 <div class="main">
-  <div class="viewer">
-    <model-viewer id="viewer"
-      src=""
-      ar
-      ar-modes="webxr scene-viewer quick-look"
-      camera-controls
-      auto-rotate>
-      <button slot="ar-button">📱 เปิด AR</button>
-    </model-viewer>
-  </div>
+  <model-viewer id="viewer"
+    ar
+    ar-modes="webxr scene-viewer quick-look"
+    camera-controls
+    auto-rotate>
+  </model-viewer>
 
   <div class="info-panel">
-    <div class="info-header" id="title">เลือกอวัยวะ</div>
-    <div id="desc">กรุณาเลือกข้อมูลด้านล่าง</div>
+    <h3 id="title">เลือกอวัยวะ</h3>
+    <p id="desc"></p>
   </div>
 
   <div class="menu" id="menu"></div>
 </div>
 
 <script>
-let data = [];
-const viewer = document.getElementById("viewer");
-const tabs = document.getElementById("tabs");
-const menu = document.getElementById("menu");
-const title = document.getElementById("title");
-const desc = document.getElementById("desc");
+const home=document.getElementById("home");
+const quizPage=document.getElementById("quizPage");
+const viewer=document.getElementById("viewer");
+const tabs=document.getElementById("tabs");
+const menu=document.getElementById("menu");
+const title=document.getElementById("title");
+const desc=document.getElementById("desc");
+const qTitle=document.getElementById("qTitle");
+const qChoices=document.getElementById("qChoices");
+const qProgress=document.getElementById("qProgress");
 
-/* ===== Home functions ===== */
-function startLearning(){
-  document.getElementById("home").style.display = "none";
-}
+let data=[], currentQuizData=[], qIndex=0, score=0, isAnswered=false;
 
-function openQuiz(){
-  alert("ระบบแบบทดสอบจะพัฒนาในขั้นถัดไป");
-}
-
-function openAbout(){
-  alert("โครงงานนี้จัดทำเพื่อเป็นสื่อการเรียนรู้กายวิภาค โดยใช้ WebAR และ 3D Model");
-}
-
-/* ===== Load JSON ===== */
+// โหลดข้อมูลหลัก
 fetch("anatomy_data.json")
-  .then(r => r.json())
-  .then(json => {
-    data = json.systems;
-    renderTabs();
-    loadSystem(0);
-  })
-  .catch(err => {
-    alert("โหลด anatomy_data.json ไม่ได้ ตรวจสอบชื่อไฟล์");
-    console.error(err);
-  });
+.then(r=>r.json())
+.then(j=>{
+  data=j.systems;
+  renderTabs();
+  loadSystem(0);
+});
+
+/* --- ระบบการเรียนรู้ --- */
+function startLearning(){ home.style.display="none"; }
 
 function renderTabs(){
-  tabs.innerHTML = data.map((s,i)=>
-    `<div class="tab-btn" onclick="loadSystem(${i})" id="tab${i}">${s.category}</div>`
+  tabs.innerHTML=data.map((s,i)=>
+    `<div class="tab-btn" id="t${i}" onclick="loadSystem(${i})">${s.category}</div>`
   ).join("");
 }
 
 function loadSystem(i){
   document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-  document.getElementById("tab"+i).classList.add("active");
-
-  const items = data[i].items;
-  menu.innerHTML = items.map((o,j)=>
-    `<div class="menu-item" onclick="selectOrgan(${i},${j})" id="item${j}">${o.name}</div>`
+  document.getElementById("t"+i).classList.add("active");
+  
+  menu.innerHTML=data[i].items.map((o,j)=>
+    `<div class="menu-item" id="m${i}${j}" onclick="selectOrgan(${i},${j})">${o.name}</div>`
   ).join("");
-
   selectOrgan(i,0);
 }
 
 function selectOrgan(i,j){
-  document.querySelectorAll(".menu-item").forEach(b=>b.classList.remove("active"));
-  document.getElementById("item"+j).classList.add("active");
+  document.querySelectorAll(".menu-item").forEach(m=>m.classList.remove("active"));
+  const activeMenu = document.getElementById(`m${i}${j}`);
+  if(activeMenu) activeMenu.classList.add("active");
 
-  const organ = data[i].items[j];
-  viewer.src = organ.model_file;
-  title.textContent = organ.name;
-  desc.textContent = organ.description;
+  const o=data[i].items[j];
+  viewer.src=o.model_file;
+  title.textContent=o.name;
+  desc.textContent=o.description;
+  currentQuizData = [...o.quiz].sort(() => Math.random() - 0.5);
+  // เก็บชุดคำถามของอวัยวะนั้นไว้สำหรับทำ Quiz
+  currentQuizData = o.quiz || [];
+}
+
+/* --- ระบบแบบทดสอบ --- */
+function openQuiz(){
+  if(currentQuizData.length === 0){
+    alert("อวัยวะนี้ยังไม่มีแบบทดสอบ กรุณาเลือกอวัยวะอื่นก่อนครับ");
+    return;
+  }
+  home.style.display="none";
+  quizPage.style.display="flex";
+  qIndex=0; score=0;
+  showQuestion();
+}
+
+function showQuestion(){
+  isAnswered = false;
+  const btnNext = document.querySelector("button[onclick='nextQuestion()']");
+  btnNext.disabled = true; // ล็อกปุ่มถัดไปจนกว่าจะตอบ
+
+  if(qIndex >= currentQuizData.length){
+    showResult();
+    return;
+  }
+
+  const q = currentQuizData[qIndex];
+  qTitle.textContent = q.question;
+  qChoices.innerHTML = q.choices.map((c,i)=>
+    `<div class="choice" onclick="answer(${i})">${c}</div>`
+  ).join("");
+  qProgress.textContent = `ข้อที่ ${qIndex+1} จาก ${currentQuizData.length}`;
+}
+
+function answer(i){
+  if(isAnswered) return;
+  isAnswered = true;
+
+  const q = currentQuizData[qIndex];
+  const choices = document.querySelectorAll(".choice");
+  const btnNext = document.querySelector("button[onclick='nextQuestion()']");
+  
+  choices.forEach((c, idx) => {
+    if(idx === q.answer) c.classList.add("correct");
+    if(idx === i && i !== q.answer) c.classList.add("wrong");
+  });
+
+  if(i === q.answer) score++;
+  btnNext.disabled = false; // ตอบแล้วกดถัดไปได้
+}
+
+function nextQuestion(){
+  qIndex++;
+  showQuestion();
+}
+
+function showResult(){
+  const percent = (score / currentQuizData.length) * 100;
+  let grade = "";
+  if(percent >= 80) grade = "ยอดเยี่ยมมาก! 🌟";
+  else if(percent >= 50) grade = "ทำได้ดีแล้วนะ 👍";
+  else grade = "พยายามอีกนิด ทบทวนใหม่นะ 📚";
+
+  qTitle.textContent = "สรุปผลคะแนน";
+  qChoices.innerHTML = `
+    <div class="summary-score">${score} / ${currentQuizData.length}</div>
+    <p style="font-size: 1.2rem;">${grade}</p>
+    <button onclick="closeQuiz()" style="width:100%; margin-top:20px;">กลับไปหน้าหลัก</button>
+  `;
+  qProgress.textContent = "";
+  document.querySelector("button[onclick='nextQuestion()']").style.display = "none";
+}
+
+function closeQuiz(){
+  quizPage.style.display="none";
+  home.style.display="flex";
+  // รีเซ็ตปุ่มถัดไปให้กลับมาโชว์
+  document.querySelector("button[onclick='nextQuestion()']").style.display = "inline-block";
+}
+// เพิ่มตัวแปรควบคุมเวลา
+let timerInterval;
+let timeLeft = 15; // กำหนดเวลาต่อข้อ (วินาที)
+const maxTime = 15;
+
+function showQuestion() {
+  isAnswered = false;
+  const btnNext = document.getElementById("nextBtn");
+  btnNext.disabled = true;
+
+  if(qIndex >= currentQuizData.length){
+    clearInterval(timerInterval);
+    showResult();
+    return;
+  }
+
+  // รีเซ็ตเวลาใหม่ทุกข้อ
+  resetTimer();
+
+  const q = currentQuizData[qIndex];
+  qTitle.textContent = q.question;
+  qChoices.innerHTML = q.choices.map((c,i)=>
+    `<div class="choice" onclick="answer(${i})">${c}</div>`
+  ).join("");
+  qProgress.textContent = `ข้อที่ ${qIndex+1} จาก ${currentQuizData.length}`;
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  timeLeft = maxTime;
+  updateTimerUI();
+  
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerUI();
+    
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      autoAnswer(); // หมดเวลาให้เฉลยอัตโนมัติ
+    }
+  }, 1000);
+}
+
+function updateTimerUI() {
+  document.getElementById("timeLeft").textContent = timeLeft;
+  const widthPercent = (timeLeft / maxTime) * 100;
+  document.getElementById("timerBar").style.width = widthPercent + "%";
+}
+
+function autoAnswer() {
+  if (isAnswered) return;
+  // ส่งค่า -1 เพื่อบอกว่าไม่ได้ตอบ (ผิด)
+  answer(-1); 
+  alert("หมดเวลาแล้ว! ⏰");
+}
+
+function answer(i) {
+  if (isAnswered) return;
+  isAnswered = true;
+  clearInterval(timerInterval); // หยุดเวลาทันทีที่ตอบ
+
+  const q = currentQuizData[qIndex];
+  const choices = document.querySelectorAll(".choice");
+  const btnNext = document.getElementById("nextBtn");
+  
+  choices.forEach((c, idx) => {
+    if(idx === q.answer) c.classList.add("correct");
+    if(idx === i && i !== q.answer) c.classList.add("wrong");
+  });
+
+  if(i === q.answer) score++;
+  btnNext.disabled = false;
+}
+
+// อย่าลืมล้าง Timer เมื่อปิด Quiz
+function closeQuiz() {
+  clearInterval(timerInterval);
+  quizPage.style.display="none";
+  home.style.display="flex";
+  document.getElementById("nextBtn").style.display = "inline-block";
 }
 </script>
-
 
 </body>
 </html>
