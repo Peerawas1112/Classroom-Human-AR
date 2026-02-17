@@ -2,99 +2,49 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Human Anatomy AR Learning</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Anatomy AR Learning System</title>
 
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap" rel="stylesheet">
 
 <style>
-body{
-  margin:0;
-  font-family:Kanit,sans-serif;
-  background:#020617;
-  color:white;
-}
-.home,.quiz-page{
-  position:fixed;
-  inset:0;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:#020617;
-  z-index:10;
-}
-.quiz-page{display:none;}
-.box{
-  width:90%;
-  max-width:480px;
-  background:#0f172a;
-  border-radius:20px;
-  padding:24px;
-  text-align:center;
-}
-button{
-  padding:12px 18px;
-  border:none;
-  border-radius:14px;
-  background:#ff4757;
-  color:white;
-  cursor:pointer;
-}
-.choice{
-  background:#1e293b;
-  padding:12px;
-  border-radius:12px;
-  margin:8px 0;
-  cursor:pointer;
-}
-.choice.correct{background:#16a34a;}
-.choice.wrong{background:#dc2626;}
-.tabs,.menu{
-  display:flex;
-  gap:8px;
-  padding:10px;
-  overflow-x:auto;
-}
-.tab-btn,.menu-item{
-  padding:8px 14px;
-  border-radius:14px;
-  background:#1e293b;
-  cursor:pointer;
-}
-.tab-btn.active,.menu-item.active{background:#ff4757;}
-.main{height:calc(100vh - 110px);}
-model-viewer{width:100%;height:100%;}
-.info-panel{
-  position:absolute;
-  bottom:80px;
-  left:50%;
-  transform:translateX(-50%);
-  background:#0f172a;
-  width:90%;
-  max-width:420px;
-  border-radius:16px;
-  padding:14px;
-}
-button:disabled { background: #475569; cursor: not-allowed; }
-  .summary-score { font-size: 2.5rem; color: #ff4757; margin: 15px 0; font-weight: bold; }
-  .explanation { font-size: 0.9rem; color: #cbd5e1; margin-top: 10px; font-style: italic; }
-  /* เพิ่มสไตล์สำหรับแถบเวลา */
-  .timer-container {
-    width: 100%;
-    height: 8px;
-    background: #1e293b;
-    border-radius: 4px;
-    margin: 15px 0;
-    overflow: hidden;
-  }
-  #timerBar {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, #ff4757, #ff6b81);
-    transition: width 1s linear;
-  }
-  .timer-text { font-size: 0.9rem; color: #ff4757; font-weight: bold; }
+:root { --primary: #ff4757; --bg: #020617; --glass: rgba(15, 23, 42, 0.9); --border: rgba(255, 255, 255, 0.1); }
+body{ margin:0; font-family:Kanit,sans-serif; background:var(--bg); color:white; height:100vh; overflow:hidden; }
+
+/* UI Layout */
+.app-header { height: 55px; display: none; align-items: center; justify-content: space-between; padding: 0 16px; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); z-index: 500; }
+.home, .quiz-page { position:fixed; inset:0; display:flex; justify-content:center; align-items:center; background:var(--bg); z-index:1000; overflow-y: auto; }
+.quiz-page { display:none; }
+.box { width:90%; max-width:480px; background:var(--glass); border-radius:28px; padding:30px; text-align:center; border: 1px solid var(--border); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+
+/* Input & Buttons */
+input[type="text"] { width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: white; text-align: center; font-family: Kanit; font-size: 1rem; }
+button { padding:12px 20px; border:none; border-radius:16px; background:var(--primary); color:white; font-size:1rem; cursor:pointer; transition: 0.3s; font-family: Kanit; }
+button:disabled { background: #475569; opacity: 0.5; }
+
+/* Quiz Styles */
+.choice { background:#1e293b; padding:14px; border-radius:16px; margin:10px 0; cursor:pointer; text-align: left; border: 1px solid transparent; transition: 0.2s; }
+.choice.correct { background:#16a34a !important; border-color: #4ade80; }
+.choice.wrong { background:#dc2626 !important; border-color: #f87171; }
+.choice.disabled { pointer-events: none; }
+
+/* Timer */
+.timer-container { width: 100%; height: 6px; background: #1e293b; border-radius: 10px; margin: 15px 0; overflow: hidden; }
+#timerBar { width: 100%; height: 100%; background: var(--primary); transition: width 1s linear; }
+
+/* Result Table */
+.result-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; }
+.result-table th, .result-table td { padding: 8px; border-bottom: 1px solid var(--border); text-align: left; }
+.grade-text { font-size: 4rem; font-weight: bold; color: var(--primary); margin: 10px 0; }
+
+/* Viewer Elements */
+.tabs, .menu { display:none; gap:10px; padding:10px; overflow-x:auto; background: rgba(0,0,0,0.3); }
+.tab-btn, .menu-item { padding:8px 16px; border-radius:16px; border:1px solid var(--border); cursor:pointer; white-space: nowrap; }
+.tab-btn.active, .menu-item.active { background:var(--primary); }
+.main { height:calc(100vh - 110px); position:relative; display: none; }
+model-viewer { width:100%; height:100%; }
+.info-panel { position:absolute; bottom:80px; left:50%; transform:translateX(-50%); width:90%; max-width:420px; background:var(--glass); border-radius:20px; padding:16px; border: 1px solid var(--border); pointer-events: none; }
 </style>
 </head>
 
@@ -102,257 +52,265 @@ button:disabled { background: #475569; cursor: not-allowed; }
 
 <div id="home" class="home">
   <div class="box">
-    <h1>Human Anatomy AR</h1>
-    <button onclick="startLearning()">📚 เริ่มเรียน</button><br><br>
-    <button onclick="openQuiz()">📝 แบบทดสอบก่อนเรียน</button><br><br>
-    <button onclick="openQuiz()">📝 แบบทดสอบหลังเรียน</button>
+    <h1 style="margin-bottom: 10px;">Human Anatomy AR</h1>
+    <p style="color: #94a3b8; margin-bottom: 25px;">กรุณาระบุชื่อ</p>
+    <input type="text" id="studentName" placeholder="ชื่อ-นามสกุล นักเรียน" />
+    <button onclick="startLearning()" style="width: 100%;">📚 เข้าบทเรียน</button>
+    <div style="display: flex; gap: 10px; margin-top: 15px;">
+        <button onclick="openQuiz('ก่อนเรียน')" style="flex: 1;">📝 เเบบทดสอบ-ก่อนเรียน</button>
+        <button onclick="openQuiz('หลังเรียน')" style="flex: 1;">📝 เเบบทดสอบ-หลังเรียน</button>
+    </div>
   </div>
 </div>
 
 <div id="quizPage" class="quiz-page">
-  <div class="box">
-    <div class="timer-text">เวลาที่เหลือ: <span id="timeLeft">15</span> วินาที</div>
-    <div class="timer-container"><div id="timerBar"></div></div>
+  <div class="box" id="quizBox">
+    <div id="quizHeader">
+        <div id="quizType" style="color:var(--primary); font-weight:500;"></div>
+        <div style="font-size: 0.9rem; margin-bottom: 10px;" id="displayUserName"></div>
+        <div class="timer-container"><div id="timerBar"></div></div>
+    </div>
     
-    <h2 id="qTitle"></h2>
-    <div id="qChoices"></div>
-    <p id="qProgress"></p>
-    <button id="nextBtn" onclick="nextQuestion()">ถัดไป</button><br><br>
-    <button onclick="closeQuiz()">⬅ กลับ</button>
+    <div id="quizBody">
+        <h2 id="qTitle" style="font-size: 1.1rem; min-height: 50px;"></h2>
+        <div id="qChoices"></div>
+        <p id="qProgress" style="font-size: 0.8rem; color: #94a3b8; margin-top: 15px;"></p>
+    </div>
+    <button id="exitQuizBtn" onclick="closeQuiz()" style="background:none; border:1px solid #4b5563; color:#94a3b8; margin-top:10px;">ยกเลิก</button>
   </div>
 </div>
 
-<div class="tabs" id="tabs"></div>
-
-<div class="main">
-  <model-viewer id="viewer"
-    ar
-    ar-modes="webxr scene-viewer quick-look"
-    camera-controls
-    auto-rotate>
-  </model-viewer>
-
+<header class="app-header" id="appHeader">
+    <span id="learnUser" style="font-size: 0.8rem; color: #94a3b8;"></span>
+    <button onclick="backToHome()" style="background:none; border:1px solid var(--border); font-size: 0.8rem;">🏠 กลับหน้าหลัก</button>
+</header>
+<nav class="tabs" id="tabs"></nav>
+<main class="main" id="mainArea">
+  <model-viewer id="viewer" ar ar-modes="webxr scene-viewer quick-look" camera-controls auto-rotate shadow-intensity="1"></model-viewer>
   <div class="info-panel">
-    <h3 id="title">เลือกอวัยวะ</h3>
-    <p id="desc"></p>
+    <h3 id="title" style="margin:0; color:var(--primary);">เลือกอวัยวะ</h3>
+    <p id="desc" style="margin:5px 0 0 0; font-size:0.85rem; color:#cbd5e1;"></p>
   </div>
-
-  <div class="menu" id="menu"></div>
-</div>
+</main>
+<footer class="menu" id="menu"></footer>
 
 <script>
-const home=document.getElementById("home");
-const quizPage=document.getElementById("quizPage");
-const viewer=document.getElementById("viewer");
-const tabs=document.getElementById("tabs");
-const menu=document.getElementById("menu");
-const title=document.getElementById("title");
-const desc=document.getElementById("desc");
-const qTitle=document.getElementById("qTitle");
-const qChoices=document.getElementById("qChoices");
-const qProgress=document.getElementById("qProgress");
+// Variables
+let data = [], currentQuizData = [], qIndex = 0, score = 0, isAnswered = false;
+let timerInterval, timeLeft = 15;
+let studentName = "";
+const maxTime = 15;
+const delayNext = 2000;
 
-let data=[], currentQuizData=[], qIndex=0, score=0, isAnswered=false;
+// ตัวแปรเก็บข้อความคำตอบที่ถูกต้องชั่วคราวสำหรับข้อนั้นๆ
+let currentCorrectText = ""; 
 
-// โหลดข้อมูลหลัก
+// Elements
+const home = document.getElementById("home");
+const quizPage = document.getElementById("quizPage");
+const viewer = document.getElementById("viewer");
+const tabs = document.getElementById("tabs");
+const menu = document.getElementById("menu");
+const title = document.getElementById("title");
+const desc = document.getElementById("desc");
+const qTitle = document.getElementById("qTitle");
+const qChoices = document.getElementById("qChoices");
+const qProgress = document.getElementById("qProgress");
+const timerBar = document.getElementById("timerBar");
+
+// 1. Fetch Data
 fetch("anatomy_data.json")
-.then(r=>r.json())
-.then(j=>{
-  data=j.systems;
-  renderTabs();
-  loadSystem(0);
+.then(r => r.json())
+.then(j => {
+    data = j.systems;
+    renderTabs();
+    loadSystem(0);
 });
 
-/* --- ระบบการเรียนรู้ --- */
-function startLearning(){ home.style.display="none"; }
-
-function renderTabs(){
-  tabs.innerHTML=data.map((s,i)=>
-    `<div class="tab-btn" id="t${i}" onclick="loadSystem(${i})">${s.category}</div>`
-  ).join("");
+/* --- ฟังก์ชันช่วยสุ่มลำดับอาเรย์ --- */
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
 }
 
-function loadSystem(i){
-  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-  document.getElementById("t"+i).classList.add("active");
-  
-  menu.innerHTML=data[i].items.map((o,j)=>
-    `<div class="menu-item" id="m${i}${j}" onclick="selectOrgan(${i},${j})">${o.name}</div>`
-  ).join("");
-  selectOrgan(i,0);
+function renderTabs() {
+    tabs.innerHTML = data.map((s, i) => `<div class="tab-btn" id="t${i}" onclick="loadSystem(${i})">${s.category}</div>`).join("");
 }
 
-function selectOrgan(i,j){
-  document.querySelectorAll(".menu-item").forEach(m=>m.classList.remove("active"));
-  const activeMenu = document.getElementById(`m${i}${j}`);
-  if(activeMenu) activeMenu.classList.add("active");
-
-  const o=data[i].items[j];
-  viewer.src=o.model_file;
-  title.textContent=o.name;
-  desc.textContent=o.description;
-  currentQuizData = [...o.quiz].sort(() => Math.random() - 0.5);
-  // เก็บชุดคำถามของอวัยวะนั้นไว้สำหรับทำ Quiz
-  currentQuizData = o.quiz || [];
+function loadSystem(i) {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.getElementById("t" + i).classList.add("active");
+    menu.innerHTML = data[i].items.map((o, j) => `<div class="menu-item" id="m${i}${j}" onclick="selectOrgan(${i},${j})">${o.name}</div>`).join("");
+    selectOrgan(i, 0);
 }
 
-/* --- ระบบแบบทดสอบ --- */
-function openQuiz(){
-  if(currentQuizData.length === 0){
-    alert("อวัยวะนี้ยังไม่มีแบบทดสอบ กรุณาเลือกอวัยวะอื่นก่อนครับ");
-    return;
-  }
-  home.style.display="none";
-  quizPage.style.display="flex";
-  qIndex=0; score=0;
-  showQuestion();
+function selectOrgan(i, j) {
+    document.querySelectorAll(".menu-item").forEach(m => m.classList.remove("active"));
+    const activeMenu = document.getElementById(`m${i}${j}`);
+    if(activeMenu) activeMenu.classList.add("active");
+
+    const o = data[i].items[j];
+    viewer.src = o.model_file;
+    title.textContent = o.name;
+    desc.textContent = o.description;
+    
+    // สุ่มลำดับข้อสอบจาก JSON
+    currentQuizData = o.quiz ? shuffleArray([...o.quiz]) : [];
 }
 
-function showQuestion(){
-  isAnswered = false;
-  const btnNext = document.querySelector("button[onclick='nextQuestion()']");
-  btnNext.disabled = true; // ล็อกปุ่มถัดไปจนกว่าจะตอบ
-
-  if(qIndex >= currentQuizData.length){
-    showResult();
-    return;
-  }
-
-  const q = currentQuizData[qIndex];
-  qTitle.textContent = q.question;
-  qChoices.innerHTML = q.choices.map((c,i)=>
-    `<div class="choice" onclick="answer(${i})">${c}</div>`
-  ).join("");
-  qProgress.textContent = `ข้อที่ ${qIndex+1} จาก ${currentQuizData.length}`;
+/* Navigation Logic */
+function checkName() {
+    studentName = document.getElementById("studentName").value.trim();
+    if (!studentName) {
+        alert("กรุณาใส่ชื่อนักเรียนก่อนครับ");
+        return false;
+    }
+    return true;
 }
 
-function answer(i){
-  if(isAnswered) return;
-  isAnswered = true;
-
-  const q = currentQuizData[qIndex];
-  const choices = document.querySelectorAll(".choice");
-  const btnNext = document.querySelector("button[onclick='nextQuestion()']");
-  
-  choices.forEach((c, idx) => {
-    if(idx === q.answer) c.classList.add("correct");
-    if(idx === i && i !== q.answer) c.classList.add("wrong");
-  });
-
-  if(i === q.answer) score++;
-  btnNext.disabled = false; // ตอบแล้วกดถัดไปได้
+function startLearning() {
+    if (!checkName()) return;
+    home.style.display = "none";
+    appHeader.style.display = "flex";
+    mainArea.style.display = "block";
+    tabs.style.display = "flex";
+    menu.style.display = "flex";
+    document.getElementById("learnUser").textContent = "👤 " + studentName;
 }
 
-function nextQuestion(){
-  qIndex++;
-  showQuestion();
+function backToHome() {
+    appHeader.style.display = "none";
+    mainArea.style.display = "none";
+    tabs.style.display = "none";
+    menu.style.display = "none";
+    home.style.display = "flex";
 }
 
-function showResult(){
-  const percent = (score / currentQuizData.length) * 100;
-  let grade = "";
-  if(percent >= 80) grade = "ยอดเยี่ยมมาก! 🌟";
-  else if(percent >= 50) grade = "ทำได้ดีแล้วนะ 👍";
-  else grade = "พยายามอีกนิด ทบทวนใหม่นะ 📚";
+/* Quiz Logic */
+function openQuiz(type) {
+    if (!checkName()) return;
 
-  qTitle.textContent = "สรุปผลคะแนน";
-  qChoices.innerHTML = `
-    <div class="summary-score">${score} / ${currentQuizData.length}</div>
-    <p style="font-size: 1.2rem;">${grade}</p>
-    <button onclick="closeQuiz()" style="width:100%; margin-top:20px;">กลับไปหน้าหลัก</button>
-  `;
-  qProgress.textContent = "";
-  document.querySelector("button[onclick='nextQuestion()']").style.display = "none";
-}
+    // รวมคำถามจากทุกระบบที่มีใน JSON เข้าด้วยกัน
+    let allQuestions = [];
+    data.forEach(system => {
+        system.items.forEach(item => {
+            if (item.quiz) allQuestions = allQuestions.concat(item.quiz);
+        });
+    });
 
-function closeQuiz(){
-  quizPage.style.display="none";
-  home.style.display="flex";
-  // รีเซ็ตปุ่มถัดไปให้กลับมาโชว์
-  document.querySelector("button[onclick='nextQuestion()']").style.display = "inline-block";
+    if (allQuestions.length < 10) {
+        alert("คำถามในระบบมีไม่ถึง 10 ข้อ กรุณาเพิ่มคำถามใน JSON");
+        return;
+    }
+
+    // สุ่มคำถามทั้งหมดแล้วเลือกมาเพียง 10 ข้อ
+    currentQuizData = shuffleArray([...allQuestions]).slice(0, 10);
+
+    document.getElementById("quizType").textContent = "แบบทดสอบ" + type;
+    document.getElementById("displayUserName").textContent = "นักเรียน: " + studentName;
+    home.style.display = "none";
+    quizPage.style.display = "flex";
+    qIndex = 0; score = 0;
+    showQuestion();
 }
-// เพิ่มตัวแปรควบคุมเวลา
-let timerInterval;
-let timeLeft = 15; // กำหนดเวลาต่อข้อ (วินาที)
-const maxTime = 15;
 
 function showQuestion() {
-  isAnswered = false;
-  const btnNext = document.getElementById("nextBtn");
-  btnNext.disabled = true;
-
-  if(qIndex >= currentQuizData.length){
-    clearInterval(timerInterval);
-    showResult();
-    return;
-  }
-
-  // รีเซ็ตเวลาใหม่ทุกข้อ
-  resetTimer();
-
-  const q = currentQuizData[qIndex];
-  qTitle.textContent = q.question;
-  qChoices.innerHTML = q.choices.map((c,i)=>
-    `<div class="choice" onclick="answer(${i})">${c}</div>`
-  ).join("");
-  qProgress.textContent = `ข้อที่ ${qIndex+1} จาก ${currentQuizData.length}`;
-}
-
-function resetTimer() {
-  clearInterval(timerInterval);
-  timeLeft = maxTime;
-  updateTimerUI();
-  
-  timerInterval = setInterval(() => {
-    timeLeft--;
-    updateTimerUI();
-    
-    if (timeLeft <= 0) {
-      clearInterval(timerInterval);
-      autoAnswer(); // หมดเวลาให้เฉลยอัตโนมัติ
+    isAnswered = false;
+    if (qIndex >= currentQuizData.length) {
+        showResult();
+        return;
     }
-  }, 1000);
+    const q = currentQuizData[qIndex];
+    
+    // เก็บข้อความคำตอบที่ถูกต้องไว้ก่อนทำการสุ่มตัวเลือก
+    currentCorrectText = q.choices[q.answer];
+    
+    // ทำการสุ่มตัวเลือก (Shuffling Choices)
+    const shuffledChoices = shuffleArray([...q.choices]);
+
+    qTitle.textContent = q.question;
+    qChoices.innerHTML = shuffledChoices.map((choiceText) => 
+        `<div class="choice" onclick="answer(this)">${choiceText}</div>`
+    ).join("");
+    
+    qProgress.textContent = `ข้อที่ ${qIndex + 1} / ${currentQuizData.length}`;
+    startTimer();
 }
 
-function updateTimerUI() {
-  document.getElementById("timeLeft").textContent = timeLeft;
-  const widthPercent = (timeLeft / maxTime) * 100;
-  document.getElementById("timerBar").style.width = widthPercent + "%";
+function startTimer() {
+    clearInterval(timerInterval);
+    timeLeft = maxTime;
+    timerBar.style.width = "100%";
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        timerBar.style.width = (timeLeft / maxTime) * 100 + "%";
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            answer(null); // หมดเวลา
+        }
+    }, 1000);
 }
 
-function autoAnswer() {
-  if (isAnswered) return;
-  // ส่งค่า -1 เพื่อบอกว่าไม่ได้ตอบ (ผิด)
-  answer(-1); 
-  alert("หมดเวลาแล้ว! ⏰");
+function answer(element) {
+    if (isAnswered) return;
+    isAnswered = true;
+    clearInterval(timerInterval);
+
+    const choices = document.querySelectorAll(".choice");
+    const selectedText = element ? element.textContent : "";
+
+    choices.forEach((c) => {
+        c.classList.add("disabled");
+        // ถ้าข้อความในปุ่มตรงกับคำตอบที่ถูก ให้แสดงสีเขียว
+        if (c.textContent === currentCorrectText) {
+            c.classList.add("correct");
+        }
+        // ถ้าผู้ใช้เลือกผิด ให้ปุ่มที่เลือกแสดงสีแดง
+        if (element && c === element && selectedText !== currentCorrectText) {
+            c.classList.add("wrong");
+        }
+    });
+
+    if (selectedText === currentCorrectText) {
+        score++;
+    }
+
+    setTimeout(() => { qIndex++; showQuestion(); }, delayNext);
 }
 
-function answer(i) {
-  if (isAnswered) return;
-  isAnswered = true;
-  clearInterval(timerInterval); // หยุดเวลาทันทีที่ตอบ
-
-  const q = currentQuizData[qIndex];
-  const choices = document.querySelectorAll(".choice");
-  const btnNext = document.getElementById("nextBtn");
-  
-  choices.forEach((c, idx) => {
-    if(idx === q.answer) c.classList.add("correct");
-    if(idx === i && i !== q.answer) c.classList.add("wrong");
-  });
-
-  if(i === q.answer) score++;
-  btnNext.disabled = false;
+function calculateGrade(p) {
+    if(p >= 80) return "A";
+    if(p >= 70) return "B";
+    if(p >= 60) return "C";
+    if(p >= 50) return "D";
+    return "F";
 }
 
-// อย่าลืมล้าง Timer เมื่อปิด Quiz
+function showResult() {
+    const percent = (score / currentQuizData.length) * 100;
+    const grade = calculateGrade(percent);
+    
+    qTitle.textContent = "สรุปผลการทดสอบ";
+    qChoices.innerHTML = `
+        <div style="font-size: 0.9rem; color: #94a3b8;">เกรดที่ได้</div>
+        <div class="grade-text">${grade}</div>
+        <div class="summary-score">${score} / ${currentQuizData.length}</div>
+        <p>${percent >= 50 ? 'ผ่านเกณฑ์ ยินดีด้วยครับ! ✨' : 'ทบทวนอีกครั้งนะครับ 📚'}</p>
+        <button onclick="closeQuiz()" style="width:100%; margin-top:10px;">เสร็จสิ้น</button>
+    `;
+    qProgress.textContent = "";
+    document.getElementById("timerBar").parentElement.style.display = "none";
+}
+
 function closeQuiz() {
-  clearInterval(timerInterval);
-  quizPage.style.display="none";
-  home.style.display="flex";
-  document.getElementById("nextBtn").style.display = "inline-block";
+    clearInterval(timerInterval);
+    document.getElementById("timerBar").parentElement.style.display = "block";
+    quizPage.style.display = "none";
+    home.style.display = "flex";
 }
 </script>
-
 </body>
 </html>
